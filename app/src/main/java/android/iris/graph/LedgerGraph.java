@@ -23,7 +23,8 @@ public class LedgerGraph extends View {
 
     private float oldLeft = 0;
 
-    private Paint paint;
+    private Paint paintCredit;
+    private Paint paintDebit;
 
 
 
@@ -53,9 +54,11 @@ public class LedgerGraph extends View {
 
     public void draw(){
 
-        paint = new Paint();
-        paint.setColor(Color.BLACK);
+        paintCredit = new Paint();
+        paintCredit.setColor(Color.BLACK);
 
+        paintDebit = new Paint();
+        paintDebit.setColor(Color.BLUE);
 
         if (datas.isEmpty()){
             Log.v(TAG,"No data set");
@@ -99,7 +102,6 @@ public class LedgerGraph extends View {
         Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
 
         Canvas canvas = new Canvas(bitmap);
-        canvas.drawColor(Color.RED);
         float widthWithSpace = width/datas.size();
 
         float barSpace = widthWithSpace*(percentageWitdh/100f);
@@ -109,18 +111,25 @@ public class LedgerGraph extends View {
 
             float left = oldLeft+barSpace;
             float right = left+barWidth;
-            float bottom = height;
+            float creditBottom = height/2;
 
             float unit = height/maxValue;
 
-            float actualbarHeight = unit* (barData.getCredit()+barData.getDebit());
-            float top = bottom-actualbarHeight;
-          //  float top = 10;
+            float creditHeight = unit * barData.getCredit();
+            float creditTop = creditBottom - creditHeight;
 
-            Log.v(TAG,"onDraw left: "+left+" right: "+right+" top: "+top+" bottom: "+bottom);
+            float debitHeight = unit * barData.getDebit();
+            float debitTop = creditBottom;
+            float debitBottom = debitTop+debitHeight;
 
-            canvas.drawRect(left,top,right,bottom,paint);
-            //TODO: Do another call for bottom
+
+
+         //   Log.v(TAG,"onDraw left: "+left+" right: "+right+" top: "+top+" bottom: "+bottomCredit);
+            // Draw credit
+            canvas.drawRect(left,creditTop,right,creditBottom,paintCredit);
+            // Draw debit
+            canvas.drawRect(left,debitTop,right,debitBottom,paintDebit);
+
 
             oldLeft = right;
 
