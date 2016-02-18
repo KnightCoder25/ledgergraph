@@ -23,14 +23,20 @@ public class LedgerGraph extends View {
     // In Dp
     private int strokeWidth = 1;
     private int paddingInDp = 8;
+    private int textSize = 12;
+
 
 
     private Paint paintCredit;
     private Paint paintDebit;
     private Paint paintLines;
 
+    private Paint paintAxisText;
+
+
     private float xAxis=0;
 
+    private int textSizePixels;
     private int paddingInPixels;
 
 
@@ -66,6 +72,8 @@ public class LedgerGraph extends View {
 
         paddingInPixels = (int) getPixels(paddingInDp);
 
+        textSizePixels =  (int)getPixels(textSize);
+
         Log.v(TAG, "paddingInPixels " + paddingInPixels);
 
 
@@ -80,6 +88,11 @@ public class LedgerGraph extends View {
         paintLines.setStrokeWidth(getPixels(strokeWidth));
         paintLines.setStyle(Paint.Style.STROKE);
 
+
+        paintAxisText = new Paint(Paint.ANTI_ALIAS_FLAG);
+        paintAxisText.setColor(Color.BLACK);
+        paintAxisText.setTextSize(textSizePixels);
+        paintAxisText.setTextAlign(Paint.Align.CENTER);
 
         if (datas.isEmpty()) {
             Log.v(TAG, "No data set");
@@ -124,6 +137,11 @@ public class LedgerGraph extends View {
         // Y Axis
         canvas.drawLine((float) paddingInPixels, 0f, (float) paddingInPixels, height, paintLines);
 
+        canvas.drawBitmap(drawLabels(width,
+                (int)(15*unitHeight),0),0,
+                (int)(85*unitHeight),
+                new Paint());
+
     }
 
     private Bitmap drawBars(int width, int height, float left) {
@@ -154,7 +172,7 @@ public class LedgerGraph extends View {
             float creditBottom = height / 2;
 
             // Calculate the centres
-            barCenters.add(right/2f);
+            barCenters.add((barLeft+right)/2f);
 
 
             float unit = height / maxValue;
@@ -181,6 +199,27 @@ public class LedgerGraph extends View {
         }
 
         return bitmap;
+    }
+
+
+    public Bitmap drawLabels(int width, int height, float left){
+
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+
+
+        Canvas canvas = new Canvas(bitmap);
+        canvas.drawColor(Color.CYAN);
+
+       // canvas.drawText("Text",width/2,height/2,paintAxisText);
+
+        for (int position = 0;position<datas.size();position++) {
+            BarData barData = datas.get(position);
+
+            canvas.drawText(barData.getLabel()
+                    ,barCenters.get(position),height/2f,paintAxisText);
+        }
+        return bitmap;
+
     }
 
 
